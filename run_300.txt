@@ -1,0 +1,41 @@
+==========================================================================
+DERIVATION STORE TEST RIG   detector=negation_aware:2
+==========================================================================
+
+-- E0 corpus --
+   n_docs                           300
+   avg_chars                        1596
+   clause_instances_by_tier         {0: 1148, 1: 681, 2: 426}
+   total_absences                   745
+   absences_with_distractor_text    288
+   docs_with_contradiction          134
+   store nodes                      {'nodes': 944, 'by_kind': {'source': 300, 'extraction': 300, 'derivation': 344}}
+
+-- Extraction quality (isolated from architecture) --
+   recall tier0                      1.0   (n=1148)
+   recall tier1                      0.7107   (n=681)
+   recall tier2                      0.7066   (n=426)
+   specificity, plain absent        0.9344
+   specificity, distractor present  0.9132   (n=288)
+
+-- E1 absence query, macro over 10 clause types --
+   arm                           P        R       F1    query cost
+   derivation_store         0.7948   0.9309   0.8242             0
+   global_topk_rag           0.107   0.0111    0.019            20
+   per_doc_scan_rag         0.7948   0.9309   0.8242           300
+
+-- ACL closure --
+   input_bands_present              ['internal', 'public', 'restricted']
+   root_rollup_band                 restricted
+   visible_to_public_user           False
+   visible_to_restricted_user       True
+   intersection_rule_holds          True
+   implication                      a single restricted document makes the global rollup restricted-only; production needs per-band rollups
+
+-- E2 incremental maintenance --
+   events                           100  paths={'noop': 54, 'halted': 6, 'propagated': 40}
+   incremental                      {'extraction_calls': 46, 'merge_calls': 166}
+   naive rebuild per event          {'extraction_calls': 30000, 'merge_calls': 34400}
+   speedup, extraction calls        652.2x   (>=50x gate: True)
+   speedup, merge calls             207.2x
+==========================================================================
