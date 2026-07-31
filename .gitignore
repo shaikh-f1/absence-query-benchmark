@@ -4,3 +4,4 @@ __pycache__/
 *.deb
 .venv/
 venv/
+README-1.md
