@@ -12,11 +12,13 @@ import argparse
 import random
 from typing import Dict, List, Optional
 
+import uvicorn
 from fastapi import FastAPI
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
+import datasets as ds
 import env  # noqa: F401 — load .env.local before any provider lookup
 import corpus as synth
 from engine import RollupEngine
@@ -32,7 +34,6 @@ STATE: Dict = {}
 def build_state(corpus_name: str = "synthetic", limit: int = 200,
                 detector_name: str = "heuristic") -> None:
     if corpus_name == "cuad":
-        import datasets as ds
         docs, truth, clause_types = ds.load_cuad(limit=limit)
         detector = OracleDetector(truth, clause_types, docs) \
             if detector_name != "always_absent" else AlwaysAbsentDetector(clause_types)
@@ -210,7 +211,6 @@ app.mount("/web", StaticFiles(directory="web"), name="web")
 
 
 if __name__ == "__main__":
-    import uvicorn
     ap = argparse.ArgumentParser()
     ap.add_argument("--corpus", default="synthetic", choices=["synthetic", "cuad"])
     ap.add_argument("--limit", type=int, default=200)
