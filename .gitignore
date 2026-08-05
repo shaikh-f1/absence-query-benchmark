@@ -1,7 +1,13 @@
 __pycache__/
 *.py[cod]
+*.pyc
 .env
+.env.local
+*.key
 *.deb
 .venv/
 venv/
 README-1.md
+data/
+cache/
+.pytest_cache/

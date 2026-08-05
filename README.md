@@ -11,18 +11,26 @@ python3 experiments.py --docs 2000 --events 200              # scaling
 python3 experiments.py --json                                # machine-readable
 ```
 
-Requires `scikit-learn` (TF-IDF baseline only). If it is not installed, `baselines.py` uses a minimal pure-Python TF-IDF fallback. `--detector llm` uses the Anthropic API if `ANTHROPIC_API_KEY` is set; everything else runs offline.
+Requires `scikit-learn` (TF-IDF baseline only). If it is not installed, `baselines.py` uses a minimal pure-Python TF-IDF fallback. `--detector llm` uses **OpenRouter** by default when `OPENROUTER_API_KEY` is set in `.env.local` (Anthropic still works via `ANTHROPIC_API_KEY`); everything else runs offline.
 
 ## Files
 
 | file | what it does |
 |---|---|
 | `corpus.py` | synthetic contracts + ground truth, with difficulty tiers and adversarial distractors |
+| `datasets.py` | CUAD real-contract loader (auto-download) |
 | `store.py` | content-addressed nodes, provenance DAG, support counting, ACL closure |
 | `operators.py` | Class M extractors (keyword / negation-aware / oracle / LLM), Class A mergeable rollup |
+| `llm_extractor.py` | cached LLM extraction (OpenRouter default / Anthropic), live pricing |
+| `env.py` | loads `.env.local` at import |
+| `list_models.py` | list OpenRouter models by price |
 | `engine.py` | rollup tree, semantic no-op filter, propagation halting, path-to-root maintenance |
 | `baselines.py` | global top-k RAG (arm A) and per-document scan (arm B) |
 | `experiments.py` | E0, extraction quality, E1, E2, ACL test |
+| `run_cuad.py` | real-corpus runner with imbalance-aware metrics |
+| `server.py` | inspector API |
+| `web/index.html` | inspector UI |
+| `tests/` | pytest suite (12 invariant checks) |
 
 ## The design decision that matters most
 
@@ -94,6 +102,42 @@ document makes the global rollup restricted-only, because the visible-user set i
 rollups, which multiplies derivation cost by band count — so band count has to be small,
 and that is an organisational negotiation, not an engineering one.
 
+## Real corpus
+
+[CUAD](https://www.atticusprojectai.org/cuad/) (Contract Understanding Atticus Dataset):
+**510** real commercial contracts, **41** clause categories, **20,910** clause slots,
+**67.9% absent**, expert-annotated under **CC BY 4.0**. `datasets.py` auto-downloads it
+on first use.
+
+```bash
+cp .env.local.example .env.local   # then paste your key from https://openrouter.ai/keys
+python run_cuad.py --estimate --limit 50                    # cost preflight, spends nothing
+python list_models.py claude                                # live OpenRouter prices
+python run_cuad.py --detector oracle --limit 120            # architecture check (expect MCC 1.0)
+python run_cuad.py --detector llm --limit 50                # OpenRouter default model
+python run_cuad.py --detector llm --model anthropic/claude-sonnet-4.5 --limit 50
+```
+
+OpenRouter is the default provider when `OPENROUTER_API_KEY` is present. Pass `--provider anthropic` (and set `ANTHROPIC_API_KEY`) to use Anthropic directly.
+
+## Metrics
+
+Absence-F1 is **gameable** on this corpus. A predictor that always answers "absent" scores
+**0.807** absence-F1 because absence is the majority class. Report **MCC** and
+**presence-recall** — those are the metrics the degenerate baseline cannot inflate.
+`run_cuad.py` always prints the always-absent column beside the model.
+
+## Inspector UI
+
+```bash
+python server.py                              # synthetic, instant
+python server.py --corpus cuad --limit 60     # real contracts
+# open http://127.0.0.1:8000
+```
+
+The centre of the screen is a presence matrix: established clauses are solid squares;
+absences are literal holes outlined in red. That is the thesis as an interface.
+
 ## What this rig does not yet test
 
 The verifier and its calibration (E4) — testable in isolation with prompts and labelled
@@ -103,6 +147,6 @@ tier-2 clauses are harder than tier 0 but still far tamer than genuine contract 
 
 ## Next step
 
-Swap in `--detector llm` and re-measure extraction recall by tier. Everything else is
-already validated; extraction quality on tier 1 and tier 2 is the number that decides whether
-this is production-viable, and it is the only number a heuristic cannot tell you.
+Run `run_cuad.py --detector llm` and read MCC / presence-recall against the always-absent
+baseline. Everything else is already validated; extraction quality on real contract prose is
+the number that decides whether this is production-viable.

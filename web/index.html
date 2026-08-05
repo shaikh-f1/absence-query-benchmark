@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Derivation Store — Inspector</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#16181D; --ink-2:#3A4048; --ink-3:#6B7280;
+  --paper:#E9EBEE; --card:#F3F5F7; --rule:#C4C9D0;
+  --void:#B02A16; --stamp:#1B4E6B; --verified:#4E6B2F;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  --sans:"Archivo",system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);
+  font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased}
+.mono{font-family:var(--mono)}
+.eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-3)}
+
+/* ---------- header ---------- */
+header{border-bottom:1.5px solid var(--ink);padding:20px 24px 16px;
+  display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap}
+h1{font-size:26px;font-weight:800;letter-spacing:-.028em;line-height:1}
+h1 span{color:var(--void)}
+.sub{margin-top:6px;max-width:56ch;color:var(--ink-2);font-size:13px}
+.readout{display:flex;gap:22px;flex-wrap:wrap}
+.readout div{text-align:right}
+.readout b{display:block;font-family:var(--mono);font-size:16px;font-weight:600}
+
+/* ---------- layout ---------- */
+main{display:grid;grid-template-columns:264px minmax(0,1fr);gap:0;
+  min-height:calc(100vh - 92px)}
+aside{border-right:1.5px solid var(--ink);padding:18px 18px 40px;overflow-y:auto;
+  max-height:calc(100vh - 92px);position:sticky;top:0}
+section.stage{padding:18px 24px 48px;min-width:0}
+
+/* ---------- clause rail ---------- */
+.clause{width:100%;text-align:left;background:none;border:0;cursor:pointer;
+  padding:7px 8px;border-radius:2px;display:grid;
+  grid-template-columns:1fr auto;gap:8px;align-items:center;
+  font-family:var(--mono);font-size:11.5px;color:var(--ink-2);
+  border-left:2px solid transparent}
+.clause:hover{background:var(--card);color:var(--ink)}
+.clause[aria-selected="true"]{background:var(--ink);color:var(--paper);
+  border-left-color:var(--void)}
+.clause .n{font-variant-numeric:tabular-nums;font-size:10.5px;opacity:.75}
+.clause:focus-visible{outline:2px solid var(--stamp);outline-offset:1px}
+
+/* ---------- signature: punchcard matrix ---------- */
+.matrix-wrap{border:1.5px solid var(--ink);background:var(--card);
+  padding:14px;overflow:auto;max-height:52vh}
+.matrix{display:grid;gap:2px;width:max-content}
+.cell{width:11px;height:11px;border-radius:1px;background:var(--ink);
+  transition:transform .18s ease, box-shadow .18s ease}
+/* absence is a literal hole in the card — the thesis of the whole project */
+.cell.absent{background:var(--card);
+  box-shadow:inset 0 0 0 1.25px var(--void)}
+.cell.wrong{box-shadow:inset 0 0 0 1.25px var(--void),0 0 0 2px #E8B4A8}
+.cell.col-active{transform:scale(1.5);z-index:2;position:relative}
+.cell.pulse{animation:pulse .7s ease}
+@keyframes pulse{0%{transform:scale(1)}40%{transform:scale(2.1)}100%{transform:scale(1)}}
+.rowlabel{font-family:var(--mono);font-size:9px;color:var(--ink-3);
+  white-space:nowrap;padding-right:8px;text-align:right;line-height:13px}
+
+.legend{display:flex;gap:18px;margin-top:12px;align-items:center;flex-wrap:wrap}
+.legend span{display:flex;gap:7px;align-items:center;font-family:var(--mono);
+  font-size:10.5px;color:var(--ink-2)}
+.swatch{width:11px;height:11px;border-radius:1px;background:var(--ink)}
+.swatch.absent{background:var(--card);box-shadow:inset 0 0 0 1.25px var(--void)}
+.swatch.wrong{background:var(--card);box-shadow:inset 0 0 0 1.25px var(--void),0 0 0 2px #E8B4A8}
+
+/* ---------- panels ---------- */
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+  gap:16px;margin-top:20px}
+.panel{border:1.5px solid var(--ink);background:var(--card)}
+.panel h2{font-size:11px;font-family:var(--mono);letter-spacing:.12em;
+  text-transform:uppercase;font-weight:600;padding:9px 14px;
+  border-bottom:1px solid var(--rule);background:var(--ink);color:var(--paper)}
+.panel .body{padding:14px}
+
+table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:11.5px}
+th{text-align:right;font-weight:600;color:var(--ink-3);padding:5px 6px;
+  border-bottom:1px solid var(--rule);font-size:10px;letter-spacing:.06em;
+  text-transform:uppercase}
+th:first-child{text-align:left}
+td{padding:5px 6px;text-align:right;font-variant-numeric:tabular-nums;
+  border-bottom:1px solid rgba(196,201,208,.5)}
+td:first-child{text-align:left;color:var(--ink-2)}
+td.win{color:var(--verified);font-weight:600}
+td.lose{color:var(--void);font-weight:600}
+
+.stat{display:flex;justify-content:space-between;padding:6px 0;
+  border-bottom:1px solid rgba(196,201,208,.55);font-family:var(--mono);font-size:11.5px}
+.stat b{font-weight:600;font-variant-numeric:tabular-nums}
+
+.btn{font-family:var(--mono);font-size:11px;letter-spacing:.05em;
+  text-transform:uppercase;padding:8px 13px;border:1.5px solid var(--ink);
+  background:var(--paper);color:var(--ink);cursor:pointer;border-radius:2px}
+.btn:hover{background:var(--ink);color:var(--paper)}
+.btn:focus-visible{outline:2px solid var(--stamp);outline-offset:2px}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+
+.ledger{font-family:var(--mono);font-size:11px;max-height:220px;overflow-y:auto}
+.ledger div{padding:6px 0;border-bottom:1px solid rgba(196,201,208,.55);
+  display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:baseline}
+.ledger .tag{font-size:9px;letter-spacing:.08em;text-transform:uppercase;
+  padding:1px 5px;border-radius:2px}
+.tag.noop{background:var(--rule);color:var(--ink-2)}
+.tag.halted{background:#D6D2B8;color:#5A5326}
+.tag.propagated{background:var(--stamp);color:var(--paper)}
+.ledger .save{color:var(--verified);font-weight:600}
+.ledger .enter{animation:slide .3s ease}
+@keyframes slide{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:none}}
+
+.note{font-size:12px;color:var(--ink-2);margin-top:10px;max-width:62ch}
+.note b{color:var(--void)}
+ul.docs{font-family:var(--mono);font-size:10.5px;color:var(--ink-2);
+  columns:2;max-height:130px;overflow-y:auto;margin-top:8px;list-style:none}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media (max-width:860px){main{grid-template-columns:1fr}
+  aside{position:static;max-height:none;border-right:0;border-bottom:1.5px solid var(--ink)}}
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Derivation Store <span>/</span> Inspector</h1>
+    <p class="sub">Every question below is answered from state computed when the
+      documents were written, not when the question was asked. Absences are the
+      holes in the card.</p>
+  </div>
+  <div class="readout" id="readout"></div>
+</header>
+
+<main>
+  <aside>
+    <p class="eyebrow" style="margin-bottom:10px">Clause register — click to inspect</p>
+    <div id="clauseList"></div>
+  </aside>
+
+  <section class="stage">
+    <p class="eyebrow" style="margin-bottom:9px">Presence matrix — rows are documents, columns are clauses</p>
+    <div class="matrix-wrap"><div class="matrix" id="matrix"></div></div>
+    <div class="legend">
+      <span><i class="swatch"></i> clause established</span>
+      <span><i class="swatch absent"></i> absent — nothing to retrieve</span>
+      <span><i class="swatch wrong"></i> false absence — extractor missed it</span>
+    </div>
+
+    <div class="grid2">
+      <div class="panel">
+        <h2>Selected clause</h2>
+        <div class="body" id="clausePanel">
+          <p class="note">Select a clause from the register to see which documents lack it.</p>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Accuracy vs the degenerate baseline</h2>
+        <div class="body">
+          <table id="metrics"></table>
+          <p class="note">A predictor that answers “absent” to everything scores high
+            absence-F1 on this corpus. <b>Read MCC and presence-recall</b> — those are
+            the columns it cannot game.</p>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Write-time cost, once</h2>
+        <div class="body" id="costPanel"></div>
+      </div>
+
+      <div class="panel">
+        <h2>Invalidation ledger — edit a document, watch the blast radius</h2>
+        <div class="body">
+          <div class="btnrow">
+            <button class="btn" id="btnSemantic">Change meaning</button>
+            <button class="btn" id="btnCosmetic">Reformat only</button>
+            <button class="btn" id="btnReset">Rebuild corpus</button>
+          </div>
+          <div class="ledger" id="ledger">
+            <p class="note" style="margin:0">No edits yet. Apply one to see how much
+              of the corpus has to be recomputed.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+const $ = s => document.querySelector(s);
+let STATE = null, MATRIX = null, SELECTED = null;
+
+const api = (p, o) => fetch(p, o).then(r => r.json());
+
+async function boot(){
+  STATE = await api('/api/state');
+  MATRIX = await api('/api/matrix?limit=64');
+  renderReadout(); renderClauses(); renderMatrix();
+  renderMetrics(); renderCost();
+}
+
+function renderReadout(){
+  const s = STATE;
+  $('#readout').innerHTML = `
+    <div><span class="eyebrow">Corpus</span><b>${s.n_docs} docs</b></div>
+    <div><span class="eyebrow">Clause types</span><b>${s.clause_types.length}</b></div>
+    <div><span class="eyebrow">Extractor</span><b>${s.detector}</b></div>
+    <div><span class="eyebrow">LLM calls per query</span><b style="color:var(--verified)">0</b></div>`;
+}
+
+function renderClauses(){
+  const counts = {};
+  STATE.clause_types.forEach(c => counts[c] = 0);
+  MATRIX.rows.forEach(r => r.cells.forEach((c,i) => {
+    if(!c.gold_present) counts[MATRIX.clause_types[i]]++;
+  }));
+  $('#clauseList').innerHTML = STATE.clause_types.map(c => `
+    <button class="clause" role="option" aria-selected="false" data-c="${c}">
+      <span>${c.replace(/_/g,' ')}</span>
+      <span class="n">${counts[c]}</span>
+    </button>`).join('');
+  document.querySelectorAll('.clause').forEach(b =>
+    b.onclick = () => selectClause(b.dataset.c));
+}
+
+function renderMatrix(){
+  const cts = MATRIX.clause_types;
+  const m = $('#matrix');
+  m.style.gridTemplateColumns = `auto repeat(${cts.length}, 11px)`;
+  let html = '';
+  MATRIX.rows.forEach(r => {
+    html += `<div class="rowlabel" title="${r.doc}">${r.doc.slice(0,16)}</div>`;
+    r.cells.forEach((c,i) => {
+      const absent = !c.pred_present;
+      const wrong  = absent && c.gold_present;      // false absence
+      html += `<div class="cell${absent?' absent':''}${wrong?' wrong':''}"
+        data-col="${i}" title="${r.doc} · ${cts[i].replace(/_/g,' ')} · ${
+        absent ? (wrong ? 'FALSE ABSENCE' : 'absent') : 'established'}"></div>`;
+    });
+  });
+  m.innerHTML = html;
+}
+
+async function selectClause(c){
+  SELECTED = c;
+  document.querySelectorAll('.clause').forEach(b =>
+    b.setAttribute('aria-selected', String(b.dataset.c === c)));
+  const idx = MATRIX.clause_types.indexOf(c);
+  document.querySelectorAll('.cell').forEach(el =>
+    el.classList.toggle('col-active', +el.dataset.col === idx));
+
+  const d = await api('/api/absence?clause=' + encodeURIComponent(c));
+  $('#clausePanel').innerHTML = `
+    <div class="stat"><span>documents missing this clause</span><b>${d.n_predicted}</b></div>
+    <div class="stat"><span>true absences in corpus</span><b>${d.n_gold}</b></div>
+    <div class="stat"><span>false absences (extractor missed it)</span>
+      <b style="color:var(--void)">${d.false_absences.length}</b></div>
+    <div class="stat"><span>precision / recall</span><b>${d.precision} / ${d.recall}</b></div>
+    <div class="stat"><span>LLM calls — this store vs full scan</span>
+      <b><span style="color:var(--verified)">${d.query_llm_calls}</span> vs ${d.scan_llm_calls}</b></div>
+    <ul class="docs">${d.predicted_missing.slice(0,40)
+      .map(x => `<li>${x.slice(0,26)}</li>`).join('')}</ul>`;
+}
+
+async function renderMetrics(){
+  const m = await api('/api/metrics');
+  const rows = [['absence_f1','Absence F1'],['absence_precision','Absence precision'],
+    ['absence_recall','Absence recall'],['presence_recall','Presence recall'],
+    ['balanced_accuracy','Balanced accuracy'],['mcc','MCC']];
+  $('#metrics').innerHTML = `<tr><th>Metric</th><th>This store</th><th>Always “absent”</th></tr>` +
+    rows.map(([k,label]) => {
+      const a = m.micro[k], b = m.always_absent_baseline[k];
+      const cls = (k === 'mcc' || k === 'presence_recall' || k === 'balanced_accuracy')
+        ? (a > b ? 'win' : 'lose') : '';
+      return `<tr><td>${label}</td><td class="${cls}">${a}</td><td>${b}</td></tr>`;
+    }).join('');
+}
+
+function renderCost(){
+  const s = STATE, b = s.build_cost, f = s.full_rebuild_cost;
+  $('#costPanel').innerHTML = `
+    <div class="stat"><span>extraction calls to build</span><b>${b.extraction_calls}</b></div>
+    <div class="stat"><span>merge calls to build</span><b>${b.merge_calls}</b></div>
+    <div class="stat"><span>rollup tree</span><b>${s.tree_levels.join(' → ')}</b></div>
+    <div class="stat"><span>nodes in provenance graph</span><b>${s.store.nodes}</b></div>
+    <div class="stat"><span>cost of one full rebuild</span><b>${f.extraction_calls} extractions</b></div>
+    <p class="note">Paid once at write time. Every query after this is a lookup.</p>`;
+}
+
+async function change(kind){
+  const e = await api('/api/change', {
+    method:'POST', headers:{'content-type':'application/json'},
+    body: JSON.stringify({kind})
+  });
+  const led = $('#ledger');
+  if(led.querySelector('.note')) led.innerHTML = '';
+  const saving = e.saving ? `${e.saving}× cheaper` : 'no recompute';
+  const row = document.createElement('div');
+  row.className = 'enter';
+  row.innerHTML = `<span class="tag ${e.path}">${e.path}</span>
+    <span>${e.doc.slice(0,22)} — ${e.detail}</span>
+    <span class="save">${saving}</span>`;
+  led.prepend(row);
+
+  const idx = MATRIX.rows.findIndex(r => r.doc === e.doc);
+  if(idx >= 0){
+    const cells = document.querySelectorAll('.cell');
+    const n = MATRIX.clause_types.length;
+    for(let i = 0; i < n; i++){
+      const el = cells[idx * n + i];
+      if(el){ el.classList.add('pulse'); setTimeout(()=>el.classList.remove('pulse'), 700); }
+    }
+  }
+  MATRIX = await api('/api/matrix?limit=64');
+  renderMatrix(); renderMetrics();
+  if(SELECTED) selectClause(SELECTED);
+}
+
+$('#btnSemantic').onclick = () => change('semantic');
+$('#btnCosmetic').onclick = () => change('cosmetic');
+$('#btnReset').onclick = async () => { await api('/api/reset', {method:'POST'}); boot(); };
+
+boot();
+</script>
+</body>
+</html>
