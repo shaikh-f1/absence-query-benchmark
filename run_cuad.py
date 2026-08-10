@@ -181,7 +181,8 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
                     default="oracle")
     ap.add_argument("--model", default=None,
                     help="provider model id; default is provider-appropriate")
-    ap.add_argument("--provider", choices=["openrouter", "anthropic"], default=None,
+    ap.add_argument("--provider", choices=["openrouter", "anthropic", "ollama"],
+                    default=None,
                     help="force provider; default auto-detects from env keys")
     ap.add_argument("--limit", type=int, default=None)
     ap.add_argument("--max-chars", type=int, default=None)

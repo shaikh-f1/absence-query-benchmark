@@ -1,0 +1,651 @@
+{
+  "micro": {
+    "absence_precision": 0.8778,
+    "absence_recall": 0.9186,
+    "absence_f1": 0.8977,
+    "presence_recall": 0.7027,
+    "balanced_accuracy": 0.8107,
+    "mcc": 0.6431,
+    "tp": 79,
+    "fp": 11,
+    "fn": 7,
+    "tn": 26
+  },
+  "macro_over_clause_types": {
+    "absence_precision": 0.7968,
+    "absence_recall": 0.7927,
+    "absence_f1": 0.7829,
+    "presence_recall": 0.3862,
+    "balanced_accuracy": 0.5894,
+    "mcc": 0.2439
+  },
+  "always_absent_baseline": {
+    "absence_precision": 0.6992,
+    "absence_recall": 1.0,
+    "absence_f1": 0.823,
+    "presence_recall": 0.0,
+    "balanced_accuracy": 0.5,
+    "mcc": 0.0,
+    "tp": 86,
+    "fp": 37,
+    "fn": 0,
+    "tn": 0
+  },
+  "per_clause": {
+    "document_name": {
+      "absence_precision": 0.0,
+      "absence_recall": 0.0,
+      "absence_f1": 0.0,
+      "presence_recall": 0.0,
+      "balanced_accuracy": 0.0,
+      "mcc": 0.0,
+      "tp": 0,
+      "fp": 3,
+      "fn": 0,
+      "tn": 0
+    },
+    "parties": {
+      "absence_precision": 0.0,
+      "absence_recall": 0.0,
+      "absence_f1": 0.0,
+      "presence_recall": 1.0,
+      "balanced_accuracy": 0.5,
+      "mcc": 0.0,
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "tn": 3
+    },
+    "agreement_date": {
+      "absence_precision": 1.0,
+      "absence_recall": 0.5,
+      "absence_f1": 0.6667,
+      "presence_recall": 1.0,
+      "balanced_accuracy": 0.75,
+      "mcc": 0.5,
+      "tp": 1,
+      "fp": 0,
+      "fn": 1,
+      "tn": 1
+    },
+    "effective_date": {
+      "absence_precision": 0.0,
+      "absence_recall": 0.0,
+      "absence_f1": 0.0,
+      "presence_recall": 1.0,
+      "balanced_accuracy": 0.5,
+      "mcc": 0.0,
+      "tp": 0,
+      "fp": 0,
+      "fn": 1,
+      "tn": 2
+    },
+    "expiration_date": {
+      "absence_precision": 0.0,
+      "absence_recall": 0.0,
+      "absence_f1": 0.0,
+      "presence_recall": 1.0,
+      "balanced_accuracy": 0.5,
+      "mcc": 0.0,
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "tn": 3
+    },
+    "renewal_term": {
+      "absence_precision": 1.0,
+      "absence_recall": 1.0,
+      "absence_f1": 1.0,
+      "presence_recall": 1.0,
+      "balanced_accuracy": 1.0,
+      "mcc": 1.0,
+      "tp": 2,
+      "fp": 0,
+      "fn": 0,
+      "tn": 1
+    },
+    "notice_period_to_terminate_renewal": {
+      "absence_precision": 1.0,
+      "absence_recall": 1.0,
+      "absence_f1": 1.0,
+      "presence_recall": 0.0,
+      "balanced_accuracy": 0.5,
+      "mcc": 0.0,
+      "tp": 3,
+      "fp": 0,
+      "fn": 0,
+      "tn": 0
+    },
+    "governing_law": {
+      "absence_precision": 0.0,
+      "absence_recall": 0.0,
+      "absence_f1": 0.0,
+      "presence_recall": 1.0,
+      "balanced_accuracy": 0.5,
+      "mcc": 0.0,
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "tn": 3
+    },
+    "most_favored_nation": {
+      "absence_precision": 1.0,
+      "absence_recall": 1.0,
+      "absence_f1": 1.0,
+      "presence_recall": 0.0,
+      "balanced_accuracy": 0.5,
+      "mcc": 0.0,
+      "tp": 3,
+      "fp": 0,
+      "fn": 0,
+      "tn": 0
+    },
+    "non_compete": {
+      "absence_precision": 1.0,
+      "absence_recall": 0.6667,
+      "absence_f1": 0.8,
+      "presence_recall": 0.0,
+      "balanced_accuracy": 0.3333,
+      "mcc": 0.0,
+      "tp": 2,
+      "fp": 0,
+      "fn": 1,
+      "tn": 0
+    },
+    "exclusivity": {
+      "absence_precision": 1.0,
+      "absence_recall": 0.5,
+      "absence_f1": 0.6667,
+      "presence_recall": 1.0,
+      "balanced_accuracy": 0.75,
+      "mcc": 0.5,
+      "tp": 1,
+      "fp": 0,
+      "fn": 1,
+      "tn": 1
+    },
+    "no_solicit_of_customers": {
+      "absence_precision": 1.0,
+      "absence_recall": 1.0,
+      "absence_f1": 1.0,
+      "presence_recall": 1.0,
+      "balanced_accuracy": 1.0,
+      "mcc": 1.0,
+      "tp": 2,
+      "fp": 0,
+      "fn": 0,
+      "tn": 1
+    },
+    "competitive_restriction_exception": {
+      "absence_precision": 1.0,
+      "absence_recall": 1.0,
+      "absence_f1": 1.0,
+      "presence_recall": 0.0,
+      "balanced_accuracy": 0.5,
+      "mcc": 0.0,
+      "tp": 3,
+      "fp": 0,
+      "fn": 0,
+      "tn": 0
+    },
+    "no_solicit_of_employees": {
+      "absence_precision": 1.0,
+      "absence_recall": 1.0,
+      "absence_f1": 1.0,
+      "presence_recall": 1.0,
+      "balanced_accuracy": 1.0,
+      "mcc": 1.0,
+      "tp": 2,
+      "fp": 0,
+      "fn": 0,
+      "tn": 1
+    },
+    "non_disparagement": {
+      "absence_precision": 1.0,
+      "absence_recall": 1.0,
+      "absence_f1": 1.0,
+      "presence_recall": 0.0,
+      "balanced_accuracy": 0.5,
+      "mcc": 0.0,
+      "tp": 3,
+      "fp": 0,
+      "fn": 0,
+      "tn": 0
+    },
+    "termination_for_convenience": {
+      "absence_precision": 1.0,
+      "absence_recall": 0.6667,
+      "absence_f1": 0.8,
+      "presence_recall": 0.0,
+      "balanced_accuracy": 0.3333,
+      "mcc": 0.0,
+      "tp": 2,
+      "fp": 0,
+      "fn": 1,
+      "tn": 0
+    },
+    "rofr_rofo_rofn": {
+      "absence_precision": 0.6667,
+      "absence_recall": 1.0,
+      "absence_f1": 0.8,
+      "presence_recall": 0.0,
+      "balanced_accuracy": 0.5,
+      "mcc": 0.0,
+      "tp": 2,
+      "fp": 1,
+      "fn": 0,
+      "tn": 0
+    },
+    "change_of_control": {
+      "absence_precision": 1.0,
+      "absence_recall": 1.0,
+      "absence_f1": 1.0,
+      "presence_recall": 1.0,
+      "balanced_accuracy": 1.0,
+      "mcc": 1.0,
+      "tp": 2,
+      "fp": 0,
+      "fn": 0,
+      "tn": 1
+    },
+    "anti_assignment": {
+      "absence_precision": 1.0,
+      "absence_recall": 1.0,
+      "absence_f1": 1.0,
+      "presence_recall": 1.0,
+      "balanced_accuracy": 1.0,
+      "mcc": 1.0,
+      "tp": 1,
+      "fp": 0,
+      "fn": 0,
+      "tn": 2
+    },
+    "revenue_profit_sharing": {
+      "absence_precision": 1.0,
+      "absence_recall": 1.0,
+      "absence_f1": 1.0,
+      "presence_recall": 0.0,
+      "balanced_accuracy": 0.5,
+      "mcc": 0.0,
+      "tp": 3,
+      "fp": 0,
+      "fn": 0,
+      "tn": 0
+    },
+    "price_restrictions": {
+      "absence_precision": 0.6667,
+      "absence_recall": 1.0,
+      "absence_f1": 0.8,
+      "presence_recall": 0.0,
+      "balanced_accuracy": 0.5,
+      "mcc": 0.0,
+      "tp": 2,
+      "fp": 1,
+      "fn": 0,
+      "tn": 0
+    },
+    "minimum_commitment": {
+      "absence_precision": 1.0,
+      "absence_recall": 1.0,
+      "absence_f1": 1.0,
+      "presence_recall": 1.0,
+      "balanced_accuracy": 1.0,
+      "mcc": 1.0,
+      "tp": 2,
+      "fp": 0,
+      "fn": 0,
+      "tn": 1
+    },
+    "volume_restriction": {
+      "absence_precision": 1.0,
+      "absence_recall": 1.0,
+      "absence_f1": 1.0,
+      "presence_recall": 0.0,
+      "balanced_accuracy": 0.5,
+      "mcc": 0.0,
+      "tp": 3,
+      "fp": 0,
+      "fn": 0,
+      "tn": 0
+    },
+    "ip_ownership_assignment": {
+      "absence_precision": 1.0,
+      "absence_recall": 1.0,
+      "absence_f1": 1.0,
+      "presence_recall": 0.0,
+      "balanced_accuracy": 0.5,
+      "mcc": 0.0,
+      "tp": 3,
+      "fp": 0,
+      "fn": 0,
+      "tn": 0
+    },
+    "joint_ip_ownership": {
+      "absence_precision": 1.0,
+      "absence_recall": 1.0,
+      "absence_f1": 1.0,
+      "presence_recall": 0.0,
+      "balanced_accuracy": 0.5,
+      "mcc": 0.0,
+      "tp": 3,
+      "fp": 0,
+      "fn": 0,
+      "tn": 0
+    },
+    "license_grant": {
+      "absence_precision": 1.0,
+      "absence_recall": 1.0,
+      "absence_f1": 1.0,
+      "presence_recall": 1.0,
+      "balanced_accuracy": 1.0,
+      "mcc": 1.0,
+      "tp": 1,
+      "fp": 0,
+      "fn": 0,
+      "tn": 2
+    },
+    "non_transferable_license": {
+      "absence_precision": 1.0,
+      "absence_recall": 0.6667,
+      "absence_f1": 0.8,
+      "presence_recall": 0.0,
+      "balanced_accuracy": 0.3333,
+      "mcc": 0.0,
+      "tp": 2,
+      "fp": 0,
+      "fn": 1,
+      "tn": 0
+    },
+    "affiliate_license_licensor": {
+      "absence_precision": 1.0,
+      "absence_recall": 1.0,
+      "absence_f1": 1.0,
+      "presence_recall": 0.0,
+      "balanced_accuracy": 0.5,
+      "mcc": 0.0,
+      "tp": 3,
+      "fp": 0,
+      "fn": 0,
+      "tn": 0
+    },
+    "affiliate_license_licensee": {
+      "absence_precision": 1.0,
+      "absence_recall": 1.0,
+      "absence_f1": 1.0,
+      "presence_recall": 0.0,
+      "balanced_accuracy": 0.5,
+      "mcc": 0.0,
+      "tp": 3,
+      "fp": 0,
+      "fn": 0,
+      "tn": 0
+    },
+    "unlimited_all_you_can_eat_license": {
+      "absence_precision": 1.0,
+      "absence_recall": 1.0,
+      "absence_f1": 1.0,
+      "presence_recall": 0.0,
+      "balanced_accuracy": 0.5,
+      "mcc": 0.0,
+      "tp": 3,
+      "fp": 0,
+      "fn": 0,
+      "tn": 0
+    },
+    "irrevocable_or_perpetual_license": {
+      "absence_precision": 1.0,
+      "absence_recall": 1.0,
+      "absence_f1": 1.0,
+      "presence_recall": 0.0,
+      "balanced_accuracy": 0.5,
+      "mcc": 0.0,
+      "tp": 3,
+      "fp": 0,
+      "fn": 0,
+      "tn": 0
+    },
+    "source_code_escrow": {
+      "absence_precision": 1.0,
+      "absence_recall": 1.0,
+      "absence_f1": 1.0,
+      "presence_recall": 0.0,
+      "balanced_accuracy": 0.5,
+      "mcc": 0.0,
+      "tp": 3,
+      "fp": 0,
+      "fn": 0,
+      "tn": 0
+    },
+    "post_termination_services": {
+      "absence_precision": 0.5,
+      "absence_recall": 0.5,
+      "absence_f1": 0.5,
+      "presence_recall": 0.0,
+      "balanced_accuracy": 0.25,
+      "mcc": -0.5,
+      "tp": 1,
+      "fp": 1,
+      "fn": 1,
+      "tn": 0
+    },
+    "audit_rights": {
+      "absence_precision": 1.0,
+      "absence_recall": 1.0,
+      "absence_f1": 1.0,
+      "presence_recall": 1.0,
+      "balanced_accuracy": 1.0,
+      "mcc": 1.0,
+      "tp": 2,
+      "fp": 0,
+      "fn": 0,
+      "tn": 1
+    },
+    "uncapped_liability": {
+      "absence_precision": 0.6667,
+      "absence_recall": 1.0,
+      "absence_f1": 0.8,
+      "presence_recall": 0.0,
+      "balanced_accuracy": 0.5,
+      "mcc": 0.0,
+      "tp": 2,
+      "fp": 1,
+      "fn": 0,
+      "tn": 0
+    },
+    "cap_on_liability": {
+      "absence_precision": 1.0,
+      "absence_recall": 1.0,
+      "absence_f1": 1.0,
+      "presence_recall": 1.0,
+      "balanced_accuracy": 1.0,
+      "mcc": 1.0,
+      "tp": 2,
+      "fp": 0,
+      "fn": 0,
+      "tn": 1
+    },
+    "liquidated_damages": {
+      "absence_precision": 1.0,
+      "absence_recall": 1.0,
+      "absence_f1": 1.0,
+      "presence_recall": 0.0,
+      "balanced_accuracy": 0.5,
+      "mcc": 0.0,
+      "tp": 3,
+      "fp": 0,
+      "fn": 0,
+      "tn": 0
+    },
+    "warranty_duration": {
+      "absence_precision": 0.0,
+      "absence_recall": 0.0,
+      "absence_f1": 0.0,
+      "presence_recall": 0.3333,
+      "balanced_accuracy": 0.1667,
+      "mcc": 0.0,
+      "tp": 0,
+      "fp": 2,
+      "fn": 0,
+      "tn": 1
+    },
+    "insurance": {
+      "absence_precision": 0.5,
+      "absence_recall": 1.0,
+      "absence_f1": 0.6667,
+      "presence_recall": 0.5,
+      "balanced_accuracy": 0.75,
+      "mcc": 0.5,
+      "tp": 1,
+      "fp": 1,
+      "fn": 0,
+      "tn": 1
+    },
+    "covenant_not_to_sue": {
+      "absence_precision": 0.6667,
+      "absence_recall": 1.0,
+      "absence_f1": 0.8,
+      "presence_recall": 0.0,
+      "balanced_accuracy": 0.5,
+      "mcc": 0.0,
+      "tp": 2,
+      "fp": 1,
+      "fn": 0,
+      "tn": 0
+    },
+    "third_party_beneficiary": {
+      "absence_precision": 1.0,
+      "absence_recall": 1.0,
+      "absence_f1": 1.0,
+      "presence_recall": 0.0,
+      "balanced_accuracy": 0.5,
+      "mcc": 0.0,
+      "tp": 3,
+      "fp": 0,
+      "fn": 0,
+      "tn": 0
+    }
+  },
+  "worst_5_by_mcc": [
+    {
+      "clause": "post_termination_services",
+      "mcc": -0.5,
+      "absence_f1": 0.5,
+      "presence_recall": 0.0
+    },
+    {
+      "clause": "document_name",
+      "mcc": 0.0,
+      "absence_f1": 0.0,
+      "presence_recall": 0.0
+    },
+    {
+      "clause": "parties",
+      "mcc": 0.0,
+      "absence_f1": 0.0,
+      "presence_recall": 1.0
+    },
+    {
+      "clause": "effective_date",
+      "mcc": 0.0,
+      "absence_f1": 0.0,
+      "presence_recall": 1.0
+    },
+    {
+      "clause": "expiration_date",
+      "mcc": 0.0,
+      "absence_f1": 0.0,
+      "presence_recall": 1.0
+    }
+  ],
+  "best_5_by_mcc": [
+    {
+      "clause": "cap_on_liability",
+      "mcc": 1.0,
+      "absence_f1": 1.0,
+      "presence_recall": 1.0
+    },
+    {
+      "clause": "audit_rights",
+      "mcc": 1.0,
+      "absence_f1": 1.0,
+      "presence_recall": 1.0
+    },
+    {
+      "clause": "license_grant",
+      "mcc": 1.0,
+      "absence_f1": 1.0,
+      "presence_recall": 1.0
+    },
+    {
+      "clause": "minimum_commitment",
+      "mcc": 1.0,
+      "absence_f1": 1.0,
+      "presence_recall": 1.0
+    },
+    {
+      "clause": "anti_assignment",
+      "mcc": 1.0,
+      "absence_f1": 1.0,
+      "presence_recall": 1.0
+    }
+  ],
+  "profile": {
+    "n_docs": 3,
+    "n_clause_types": 41,
+    "clause_slots": 123,
+    "present_slots": 37,
+    "absent_slots": 86,
+    "overall_absence_rate": 0.6992,
+    "avg_chars": 45382,
+    "max_chars": 70383,
+    "estimated_tokens_full_pass": 36878,
+    "most_absent": [
+      {
+        "clause": "notice_period_to_terminate_renewal",
+        "absence_rate": 1.0
+      },
+      {
+        "clause": "most_favored_nation",
+        "absence_rate": 1.0
+      },
+      {
+        "clause": "non_compete",
+        "absence_rate": 1.0
+      },
+      {
+        "clause": "competitive_restriction_exception",
+        "absence_rate": 1.0
+      },
+      {
+        "clause": "non_disparagement",
+        "absence_rate": 1.0
+      }
+    ],
+    "least_absent": [
+      {
+        "clause": "warranty_duration",
+        "absence_rate": 0.0
+      },
+      {
+        "clause": "governing_law",
+        "absence_rate": 0.0
+      },
+      {
+        "clause": "expiration_date",
+        "absence_rate": 0.0
+      },
+      {
+        "clause": "parties",
+        "absence_rate": 0.0
+      },
+      {
+        "clause": "document_name",
+        "absence_rate": 0.0
+      }
+    ],
+    "degenerate_baseline_warning": "A predictor that always answers 'absent' scores roughly 0.823 absence-F1 on this slice (absence rate 69.9%). Report MCC and presence-recall."
+  },
+  "detector": "llm:qwen2.5:7b-instruct:3:ollama:qwen2.5:7b-instruct",
+  "n_excluded": 0,
+  "note": "Read MCC and presence-recall. Absence-F1 is inflated by class imbalance."
+}

@@ -33,6 +33,13 @@ from typing import Dict, List, Optional
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
 OPENROUTER_MODELS_URL = "https://openrouter.ai/api/v1/models"
 ANTHROPIC_URL = "https://api.anthropic.com/v1/messages"
+# Ollama's NATIVE chat endpoint (not the OpenAI-compat /v1 one): only this path
+# accepts options.num_ctx, and CUAD contracts (~13k tokens) blow past Ollama's
+# default context, which would silently truncate the prompt.
+OLLAMA_URL = os.environ.get("OLLAMA_HOST_URL", "http://localhost:11434") + "/api/chat"
+# Context window for local runs. Must exceed the doc token count or extraction
+# degrades from truncation, not from the model. Override with OLLAMA_NUM_CTX.
+OLLAMA_NUM_CTX = int(os.environ.get("OLLAMA_NUM_CTX", "16384"))
 
 # Fallback only. OpenRouter prices are fetched live. USD per million tokens.
 STATIC_PRICING = {
@@ -41,7 +48,7 @@ STATIC_PRICING = {
     "claude-opus-4-1":           {"in": 15.00, "out": 75.00},
 }
 
-PROMPT_VERSION = "3"
+PROMPT_VERSION = "4"  # v4: Ollama schema-constrained decoding (exact keys, bool values)
 
 SYSTEM = (
     "You are a contract analyst. You determine whether a contract ESTABLISHES a "
@@ -117,6 +124,8 @@ def list_models(filter_str: str = "") -> List[dict]:
 
 
 def resolve_pricing(model: str, provider: str) -> Dict[str, float]:
+    if provider == "ollama":
+        return {"in": 0.0, "out": 0.0}  # local inference, no per-token cost
     if provider == "openrouter":
         p = openrouter_pricing(model)
         if p:
@@ -178,10 +187,14 @@ class LLMClauseExtractor:
             raise RuntimeError("OPENROUTER_API_KEY not set")
         if self.provider == "anthropic" and not self.an_key:
             raise RuntimeError("ANTHROPIC_API_KEY not set")
+        # ollama needs no key: it talks to a local daemon.
 
-        default = ("anthropic/claude-sonnet-4.5" if self.provider == "openrouter"
-                   else "claude-haiku-4-5-20251001")
-        self.model = model or default
+        _defaults = {
+            "openrouter": "anthropic/claude-sonnet-4.5",
+            "anthropic": "claude-haiku-4-5-20251001",
+            "ollama": "qwen2.5:7b-instruct",
+        }
+        self.model = model or _defaults.get(self.provider, "")
         self.name = f"llm:{self.model.split('/')[-1][:24]}"
         self.version = f"{PROMPT_VERSION}:{self.provider}:{self.model}"
         self.cache_dir = cache_dir
@@ -207,6 +220,34 @@ class LLMClauseExtractor:
     # -------- transport --------
 
     def _request(self, prompt: str) -> urllib.request.Request:
+        if self.provider == "ollama":
+            # Schema-constrained decoding: forces EXACTLY the clause keys as
+            # booleans. Small models otherwise invent their own key scheme
+            # (1/2/3, A/B/C, "Section 3.1") or emit "true" as a string.
+            schema = {
+                "type": "object",
+                "properties": {c: {"type": "boolean"} for c in self.clause_types},
+                "required": list(self.clause_types),
+                "additionalProperties": False,
+            }
+            body = {
+                "model": self.model,
+                "stream": False,
+                "format": schema,
+                "options": {
+                    "temperature": 0,
+                    "num_ctx": OLLAMA_NUM_CTX,
+                    "num_predict": 2048,
+                },
+                "messages": [
+                    {"role": "system", "content": SYSTEM},
+                    {"role": "user", "content": prompt},
+                ],
+            }
+            headers = {"content-type": "application/json"}
+            return urllib.request.Request(
+                OLLAMA_URL, data=json.dumps(body).encode(), headers=headers
+            )
         if self.provider == "openrouter":
             body = {
                 "model": self.model,
@@ -244,9 +285,12 @@ class LLMClauseExtractor:
     def _call(self, prompt: str) -> dict:
         delay = 2.0
         last = None
+        # CPU-only local inference on a long contract can take many minutes;
+        # a hosted call should never need that long.
+        timeout = 3600 if self.provider == "ollama" else 240
         for attempt in range(self.max_retries):
             try:
-                with urllib.request.urlopen(self._request(prompt), timeout=240) as r:
+                with urllib.request.urlopen(self._request(prompt), timeout=timeout) as r:
                     return json.loads(r.read())
             except urllib.error.HTTPError as e:
                 last = e
@@ -267,7 +311,12 @@ class LLMClauseExtractor:
         raise RuntimeError(f"retries exhausted: {last}")
 
     def _unpack(self, resp: dict):
-        """Returns (text, input_tokens, output_tokens) across both providers."""
+        """Returns (text, input_tokens, output_tokens) across all providers."""
+        if self.provider == "ollama":
+            if resp.get("error"):
+                raise RuntimeError(f"ollama error: {resp['error']}")
+            text = (resp.get("message") or {}).get("content") or ""
+            return text, resp.get("prompt_eval_count", 0), resp.get("eval_count", 0)
         if self.provider == "openrouter":
             if "error" in resp and not resp.get("choices"):
                 raise RuntimeError(f"openrouter error: {resp['error']}")
